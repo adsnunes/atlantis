@@ -150,6 +150,10 @@ Run the parser tests with:
 ./build/test-block
 ```
 
+## Acknowledgements
+
+Atlantis is based on the original [Dawn](https://github.com/andrewmd5/dawn) project by [Andrew M. D.](https://github.com/andrewmd5). We preserve the original project's MIT license and credit its foundational editor, Markdown rendering, and terminal architecture.
+
 ## License
 
 MIT
