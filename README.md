@@ -32,7 +32,7 @@ These are real captures from Atlantis running locally.
 
 ### Writing timer
 
-![Atlantis writing timer](assets/screenshots/timer.png)
+![Atlantis writing timer](assets/screenshots/timer-select.png)
 
 ## Features
 
