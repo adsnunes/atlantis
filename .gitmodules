@@ -1,0 +1,12 @@
+[submodule "third-party/utf8proc"]
+	path = third-party/utf8proc
+	url = https://github.com/JuliaStrings/utf8proc.git
+[submodule "third-party/pcre2"]
+	path = third-party/pcre2
+	url = https://github.com/PCRE2Project/pcre2.git
+[submodule "third-party/nanosvg"]
+	path = third-party/nanosvg
+	url = https://github.com/memononen/nanosvg
+[submodule "third-party/cyaml"]
+	path = third-party/cyaml
+	url = https://github.com/andrewmd5/cyaml

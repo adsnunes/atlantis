@@ -1,0 +1,65 @@
+// atlantis_args.h
+
+#ifndef ATLANTIS_ARGS_H
+#define ATLANTIS_ARGS_H
+
+#include "atlantis_types.h"
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+
+// #region Argument Types
+
+//! Argument flags
+ATLANTIS_ENUM(uint8_t) {
+    ARG_DEMO = 1 << 0, //!< Demo mode - replay document typing
+    ARG_PREVIEW = 1 << 1, //!< Read-only preview of file
+    ARG_PRINT = 1 << 2, //!< Print rendered document to stdout and exit
+    ARG_HELP = 1 << 3, //!< Show help and exit
+    ARG_VERSION = 1 << 4, //!< Show version and exit
+    ARG_ERROR = 1 << 5, //!< Parsing error occurred
+    ARG_STDIN = 1 << 6, //!< Read from stdin (- operand)
+} ArgFlag;
+
+//! Parsed command-line arguments
+typedef struct {
+    char* file; //!< Path to file to open
+    char* demo_file; //!< File to replay in demo mode
+    const char* error_msg; //!< Error message
+    int8_t theme; //!< Theme: -1 = not set, 0 = light, 1 = dark
+    int32_t timer_mins; //!< Timer override in minutes; -1 if not set, 0 disables
+    uint8_t flags; //!< ArgFlag combination
+} AtlantisArgs;
+
+// #endregion
+
+// #region Functions
+
+//! Parse command-line arguments
+//! @param argc argument count from main
+//! @param argv argument vector from main
+//! @return parsed arguments structure
+AtlantisArgs args_parse(int32_t argc, char* argv[]);
+
+//! Free resources allocated by args_parse
+//! @param args pointer to arguments structure
+void args_free(AtlantisArgs* args);
+
+//! Print usage information to stderr
+void args_print_usage(const char* program_name);
+
+//! Print version information to stdout
+void args_print_version(void);
+
+//! Check if stdin has data (for pipe detection)
+//! @return true if stdin is a pipe with data
+bool args_stdin_has_data(void);
+
+//! Read all content from stdin
+//! @param out_size pointer to store the size of returned buffer
+//! @return newly allocated buffer with stdin content, or NULL on error
+char* args_read_stdin(size_t* out_size);
+
+// #endregion
+
+#endif // ATLANTIS_ARGS_H

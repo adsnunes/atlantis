@@ -1,0 +1,27 @@
+# Build output
+build/
+build-web/
+
+web/
+
+# Object files
+*.o
+*.obj
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Session files (user data)
+.atlantis/
+
+# JavaScript/Node
+node_modules/
+bun.lockb
+.cache
+fuzz/fuzz-bin.dSYM
+fuzz/output
+fuzz/fuzz-bin

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" role="img" aria-labelledby="title desc">
+  <title id="title">Atlantis</title>
+  <desc id="desc">Atlantis navigation-first markdown editor logo</desc>
+  <defs>
+    <linearGradient id="sea" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#07161e"/>
+      <stop offset="1" stop-color="#0d4650"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0" x2="1">
+      <stop stop-color="#34cfc4"/>
+      <stop offset="1" stop-color="#75e8df"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="320" rx="28" fill="url(#sea)"/>
+  <path d="M0 230 C180 170 310 280 490 220 S830 160 1200 225" fill="none" stroke="#1a7180" stroke-width="3" opacity=".8"/>
+  <path d="M0 250 C180 190 310 300 490 240 S830 180 1200 245" fill="none" stroke="#164f5d" stroke-width="2"/>
+  <circle cx="1030" cy="78" r="3" fill="#75e8df"/><circle cx="1080" cy="112" r="2" fill="#34cfc4"/><circle cx="970" cy="128" r="2" fill="#75e8df"/>
+  <text x="92" y="158" fill="#d3f3f1" font-family="SFMono-Regular,Consolas,monospace" font-size="76" font-weight="700" letter-spacing="12">ATLANTIS</text>
+  <text x="100" y="205" fill="url(#glow)" font-family="SFMono-Regular,Consolas,monospace" font-size="20" letter-spacing="6">NAVIGATE YOUR THOUGHTS</text>
+  <path d="M100 232h360" stroke="#34cfc4" stroke-width="4" stroke-linecap="round"/>
+</svg>

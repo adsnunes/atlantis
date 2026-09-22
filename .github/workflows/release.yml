@@ -1,0 +1,221 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: macos-latest
+            target: macos-arm64
+            artifact: atlantis-macos-arm64
+            cmake_arch: arm64
+            run_arch: ""
+          - os: macos-latest
+            target: macos-x64
+            artifact: atlantis-macos-x64
+            cmake_arch: x86_64
+            run_arch: "arch -x86_64"
+          - os: ubuntu-latest
+            target: linux-x64
+            artifact: atlantis-linux-x64
+          - os: ubuntu-24.04-arm
+            target: linux-arm64
+            artifact: atlantis-linux-arm64
+          - os: windows-latest
+            target: windows-x64
+            artifact: atlantis-windows-x64
+            arch: x64
+          - os: windows-11-arm
+            target: windows-arm64
+            artifact: atlantis-windows-arm64
+            arch: ARM64
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies (Linux)
+        if: startsWith(matrix.os, 'ubuntu')
+        run: |
+          sudo rm -f /var/lib/man-db/auto-update
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev
+
+      - name: Build (macOS)
+        if: startsWith(matrix.os, 'macos')
+        run: |
+          VERSION="${{ github.ref_name }}"
+          VERSION="${VERSION#v}"
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES=${{ matrix.cmake_arch }} -DATLANTIS_VERSION="$VERSION"
+          cmake --build build -j
+          strip build/atlantis
+
+      - name: Verify binary (macOS)
+        if: startsWith(matrix.os, 'macos')
+        run: ${{ matrix.run_arch }} ./build/atlantis -h
+
+      - name: Build (Linux)
+        if: startsWith(matrix.os, 'ubuntu')
+        run: |
+          VERSION="${{ github.ref_name }}"
+          VERSION="${VERSION#v}"
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DATLANTIS_VERSION="$VERSION"
+          cmake --build build -j
+          strip build/atlantis
+
+      - name: Verify binary (Linux)
+        if: startsWith(matrix.os, 'ubuntu')
+        run: ./build/atlantis -h
+
+      - name: Build (Windows)
+        if: startsWith(matrix.os, 'windows')
+        run: |
+          $VERSION = "${{ github.ref_name }}" -replace '^v', ''
+          cmake -S . -B build -A ${{ matrix.arch }} -DATLANTIS_VERSION="$VERSION"
+          cmake --build build --config Release
+
+      - name: Verify binary (Windows)
+        if: startsWith(matrix.os, 'windows')
+        run: ./build/Release/atlantis.exe -h
+
+      - name: Package (Unix)
+        if: "!startsWith(matrix.os, 'windows')"
+        run: |
+          mkdir -p dist
+          cp build/atlantis dist/atlantis
+          cd dist && tar -czvf ${{ matrix.artifact }}.tar.gz atlantis
+
+      - name: Package (Windows)
+        if: startsWith(matrix.os, 'windows')
+        run: |
+          New-Item -ItemType Directory -Force -Path dist
+          Copy-Item build/Release/atlantis.exe dist/atlantis.exe
+          Compress-Archive -Path dist/atlantis.exe -DestinationPath dist/${{ matrix.artifact }}.zip
+
+      - name: Upload artifact (Unix)
+        if: "!startsWith(matrix.os, 'windows')"
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: dist/${{ matrix.artifact }}.tar.gz
+
+      - name: Upload artifact (Windows)
+        if: startsWith(matrix.os, 'windows')
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: dist/${{ matrix.artifact }}.zip
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create release
+        run: |
+          gh release create ${{ github.ref_name }} \
+            --generate-notes \
+            artifacts/**/*.tar.gz \
+            artifacts/**/*.zip
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  update-homebrew:
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: atlantis-*
+          path: artifacts
+
+      - name: Update Homebrew formula
+        run: |
+          VERSION="${{ github.ref_name }}"
+          VERSION="${VERSION#v}"
+          echo "Version: $VERSION"
+
+          MACOS_ARM64_SHA=$(sha256sum artifacts/atlantis-macos-arm64/atlantis-macos-arm64.tar.gz | cut -d' ' -f1)
+          MACOS_X64_SHA=$(sha256sum artifacts/atlantis-macos-x64/atlantis-macos-x64.tar.gz | cut -d' ' -f1)
+          LINUX_ARM64_SHA=$(sha256sum artifacts/atlantis-linux-arm64/atlantis-linux-arm64.tar.gz | cut -d' ' -f1)
+          LINUX_X64_SHA=$(sha256sum artifacts/atlantis-linux-x64/atlantis-linux-x64.tar.gz | cut -d' ' -f1)
+
+          MACOS_ARM64_URL="https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/atlantis-macos-arm64.tar.gz"
+          MACOS_X64_URL="https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/atlantis-macos-x64.tar.gz"
+          LINUX_ARM64_URL="https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/atlantis-linux-arm64.tar.gz"
+          LINUX_X64_URL="https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/atlantis-linux-x64.tar.gz"
+
+          echo "macOS ARM64 SHA: $MACOS_ARM64_SHA"
+          echo "macOS x64 SHA: $MACOS_X64_SHA"
+          echo "Linux ARM64 SHA: $LINUX_ARM64_SHA"
+          echo "Linux x64 SHA: $LINUX_X64_SHA"
+
+          # Clone homebrew tap and update formula
+          git clone https://x-access-token:${{ secrets.HOMEBREW_TAP_TOKEN }}@github.com/adsnunes/homebrew-tap.git tap
+
+          cat > tap/Formula/atlantis.rb << EOF
+          class Atlantis < Formula
+            desc "Distraction-free terminal writing environment with live markdown rendering"
+            homepage "https://github.com/${{ github.repository }}"
+            version "$VERSION"
+            license "MIT"
+
+            on_macos do
+              on_arm do
+                url "$MACOS_ARM64_URL"
+                sha256 "$MACOS_ARM64_SHA"
+              end
+              on_intel do
+                url "$MACOS_X64_URL"
+                sha256 "$MACOS_X64_SHA"
+              end
+            end
+
+            on_linux do
+              on_arm do
+                url "$LINUX_ARM64_URL"
+                sha256 "$LINUX_ARM64_SHA"
+              end
+              on_intel do
+                url "$LINUX_X64_URL"
+                sha256 "$LINUX_X64_SHA"
+              end
+            end
+
+            def install
+              bin.install "atlantis"
+            end
+
+            test do
+              assert_match "atlantis", shell_output("#{bin}/atlantis -h")
+            end
+          end
+          EOF
+
+          cd tap
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Formula/atlantis.rb
+          git commit -m "atlantis $VERSION"
+          git push
+        env:
+          GH_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+        continue-on-error: true

@@ -1,0 +1,91 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-macos:
+    strategy:
+      matrix:
+        include:
+          - arch: arm64
+            cmake_arch: arm64
+            run_arch: ""
+          - arch: x64
+            cmake_arch: x86_64
+            run_arch: "arch -x86_64"
+
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Build (${{ matrix.arch }})
+        run: |
+          cmake -B build -DCMAKE_OSX_ARCHITECTURES=${{ matrix.cmake_arch }}
+          cmake --build build -j
+
+      - name: Verify binary
+        run: ${{ matrix.run_arch }} ./build/atlantis -h
+
+  build-linux:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            arch: x64
+          - os: ubuntu-24.04-arm
+            arch: arm64
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev
+
+      - name: Build (${{ matrix.arch }})
+        run: |
+          cmake -B build
+          cmake --build build -j
+
+      - name: Verify binary
+        run: ./build/atlantis -h
+
+  build-windows-x64:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Build
+        run: |
+          cmake -S . -B build -A x64
+          cmake --build build --config Release
+
+      - name: Verify binary
+        run: ./build/Release/atlantis.exe -h
+
+  build-windows-arm64:
+    runs-on: windows-11-arm
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Build
+        run: |
+          cmake -S . -B build -A ARM64
+          cmake --build build --config Release
+
+      - name: Verify binary
+        run: ./build/Release/atlantis.exe -h

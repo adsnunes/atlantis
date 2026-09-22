@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atlantis - Draft Anything, Write Now</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #1a1a2e;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        #atlantis-canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Loading overlay */
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #1a1a2e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #d4d4d4;
+            z-index: 1000;
+            transition: opacity 0.3s ease;
+        }
+
+        #loading.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #loading h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
+            letter-spacing: 0.1em;
+        }
+
+        #loading .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #333;
+            border-top-color: #7c3aed;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Drop zone overlay */
+        #dropzone {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(124, 58, 237, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            z-index: 500;
+        }
+
+        #dropzone.active {
+            display: flex;
+        }
+
+        /* Hidden file input */
+        #file-input {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">
+        <h1>ATLANTIS</h1>
+        <div class="spinner"></div>
+    </div>
+
+    <div id="dropzone">
+        Drop your markdown file here
+    </div>
+
+    <canvas id="atlantis-canvas"></canvas>
+    <input type="file" id="file-input" accept=".md,.markdown,.txt">
+
+    <script>
+        // Module configuration for Emscripten
+        var Module = {
+            canvas: document.getElementById('atlantis-canvas'),
+
+            onRuntimeInitialized: function() {
+                console.log('Atlantis initialized');
+                document.getElementById('loading').classList.add('hidden');
+            },
+
+            print: function(text) {
+                console.log(text);
+            },
+
+            printErr: function(text) {
+                console.error(text);
+            }
+        };
+
+        // File drag and drop handling
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('file-input');
+
+        document.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('active');
+        });
+
+        document.addEventListener('dragleave', (e) => {
+            if (e.relatedTarget === null) {
+                dropzone.classList.remove('active');
+            }
+        });
+
+        document.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('active');
+
+            const file = e.dataTransfer.files[0];
+            if (file) {
+                loadFile(file);
+            }
+        });
+
+        // File input handling
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                loadFile(file);
+            }
+        });
+
+        function loadFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const content = e.target.result;
+                const encoder = new TextEncoder();
+                const bytes = encoder.encode(content);
+
+                // Allocate memory and copy content
+                const ptr = Module._malloc(bytes.length);
+                Module.HEAPU8.set(bytes, ptr);
+
+                // Allocate memory for filename
+                const filenameBytes = encoder.encode(file.name);
+                const filenamePtr = Module._malloc(filenameBytes.length + 1);
+                Module.HEAPU8.set(filenameBytes, filenamePtr);
+                Module.HEAPU8[filenamePtr + filenameBytes.length] = 0;
+
+                // Call the C function
+                Module._atlantis_web_load_file(ptr, bytes.length, filenamePtr);
+
+                // Free memory
+                Module._free(ptr);
+                Module._free(filenamePtr);
+            };
+            reader.readAsText(file);
+        }
+
+        // Keyboard shortcut for file open (Ctrl/Cmd+O)
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'o') {
+                e.preventDefault();
+                fileInput.click();
+            }
+        });
+
+        // Prevent context menu on canvas
+        document.getElementById('atlantis-canvas').addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
+    </script>
+
+    {{{ SCRIPT }}}
+</body>
+</html>

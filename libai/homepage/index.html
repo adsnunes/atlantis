@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>libai - Embed Apple Intelligence in Any Language</title>
+    <meta name="description"
+        content="libai is a C library that lets you embed Apple Intelligence on-device Foundation models into any programming language. Clean APIs for AI integration.">
+    <meta name="keywords"
+        content="Apple Intelligence, C library, macOS, AI, machine learning, on-device AI, Apple Intelligence API, FoundationModels, Swift bridge, embed AI">
+    <meta name="author" content="6over3">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://libai.sh/">
+    <meta property="og:title" content="libai - Embed Apple Intelligence in Any Language">
+    <meta property="og:description"
+        content="libai is a C library that lets you embed Apple Intelligence on-device Foundation models into any programming language. Clean APIs for AI integration.">
+    <meta property="og:image" content="https://libai.sh/og-image.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://libai.sh/">
+    <meta property="twitter:title" content="libai - Embed Apple Intelligence in Any Language">
+    <meta property="twitter:description"
+        content="libai is a C library that lets you embed Apple Intelligence on-device Foundation models into any programming language. Clean APIs for AI integration.">
+    <meta property="twitter:image" content="https://libai.sh/og-image.png">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://libai.sh/">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+    <style>
+        .liquidGlass-wrapper {
+            position: relative;
+            display: flex;
+            font-weight: 600;
+            overflow: hidden;
+
+            color: black;
+            cursor: pointer;
+
+            box-shadow: 0 6px 6px rgba(0, 0, 0, 0.2), 0 0 20px rgba(0, 0, 0, 0.1);
+
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+        }
+
+        .liquidGlass-effect {
+            position: absolute;
+            z-index: 0;
+            inset: 0;
+
+            backdrop-filter: blur(3px);
+            filter: url(#glass-distortion);
+            overflow: hidden;
+            isolation: isolate;
+        }
+
+        .liquidGlass-tint {
+            z-index: 1;
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .liquidGlass-shine {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+
+            overflow: hidden;
+
+            box-shadow: inset 2px 2px 1px 0 rgba(255, 255, 255, 0.5),
+                inset -1px -1px 1px 1px rgba(255, 255, 255, 0.5);
+        }
+
+        .liquidGlass-text {
+            z-index: 3;
+            font-size: 2rem;
+            color: black;
+        }
+
+        /* OTHER STYLES */
+
+        body {
+            padding: 0;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: url("bg.jpeg") center center;
+            background-size: 500px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-weight: 300;
+
+            animation: moveBackground 60s linear infinite;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .wrapper {
+            display: flex;
+            gap: 25px;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        .menu,
+        .menu>div {
+            padding: 0.4rem;
+            border-radius: 1.8rem;
+        }
+
+        .menu:hover {
+            padding: 0.6rem;
+            border-radius: 1.8rem;
+        }
+
+        .menu>div>div {
+            font-size: 20px;
+            color: white;
+            padding: 0.4rem 0.6rem;
+            border-radius: 0.8rem;
+            transition: all 0.1s ease-in;
+        }
+
+        .menu>div>div:hover {
+            background-color: rgba(255, 255, 255, 0.5);
+            box-shadow: inset -2px -2px 2px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(2px);
+        }
+
+        .dock {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border-radius: 2rem;
+            padding: 0.6rem;
+        }
+
+        .dock,
+        .dock>div {
+            border-radius: 2rem;
+        }
+
+        .dock:hover {
+            padding: 0.8rem;
+            border-radius: 2.5rem;
+        }
+
+        .dock:hover>div {
+            border-radius: 2.5rem;
+        }
+
+        .dock img {
+            width: 75px;
+            padding: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+        }
+
+        .dock img:hover {
+            transform: scale(0.95);
+            transform-origin: center center;
+        }
+
+        .dock-char {
+            width: 75px;
+            height: 75px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: 700;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .dock-char:hover {
+            transform: scale(0.95);
+            transform-origin: center center;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .wrapper {
+                gap: 15px;
+                padding: 20px;
+                align-items: center;
+            }
+
+            .menu {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .menu>div>div {
+                font-size: 16px;
+                padding: 0.3rem 0.5rem;
+            }
+
+            .dock {
+                flex-wrap: wrap;
+                max-width: 100%;
+                gap: 6px;
+                justify-content: center;
+            }
+
+            .dock-char {
+                width: 45px;
+                height: 45px;
+                font-size: 20px;
+                border-radius: 8px;
+            }
+
+            .button {
+                padding: 1rem 1.5rem;
+                max-width: 300px;
+            }
+
+            .button:hover {
+                padding: 1.2rem 1.8rem;
+            }
+
+            .button svg {
+                width: 150px;
+                height: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .wrapper {
+                gap: 10px;
+                padding: 15px;
+            }
+
+            .menu>div>div {
+                font-size: 14px;
+                padding: 0.25rem 0.4rem;
+            }
+
+            .dock {
+                gap: 4px;
+            }
+
+            .dock-char {
+                width: 35px;
+                height: 35px;
+                font-size: 16px;
+                border-radius: 6px;
+            }
+
+            .button {
+                padding: 0.8rem 1.2rem;
+            }
+
+            .button:hover {
+                padding: 1rem 1.4rem;
+            }
+
+            .button svg {
+                width: 120px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .dock {
+                gap: 3px;
+            }
+
+            .dock-char {
+                width: 28px;
+                height: 28px;
+                font-size: 12px;
+                border-radius: 4px;
+            }
+
+            .menu>div>div {
+                font-size: 12px;
+            }
+
+            .button svg {
+                width: 100px;
+            }
+        }
+
+        .button {
+            padding: 1.5rem 2.5rem;
+            border-radius: 3rem;
+        }
+
+        .button,
+        .button>div {
+            border-radius: 3rem;
+        }
+
+        .button:hover {
+            padding: 1.8rem 2.8rem;
+        }
+
+        .button:hover>div {
+            border-radius: 4rem;
+        }
+
+        .button svg {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+        }
+
+        .button:hover svg {
+            transform: scale(0.95);
+        }
+
+        @keyframes moveBackground {
+            from {
+                background-position: 0% 0%;
+            }
+
+            to {
+                background-position: 0% -1500%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="liquidGlass-wrapper menu">
+            <div class="liquidGlass-effect"></div>
+            <div class="liquidGlass-tint"></div>
+            <div class="liquidGlass-shine"></div>
+            <div class="liquidGlass-text">
+                <div onclick="window.open('https:\/\/github.com/6over3/libai/releases')">Download</div>
+                <div onclick="window.open('https:\/\/github.com/6over3/libai')">Repository</div>
+            </div>
+        </div>
+
+        <div class="liquidGlass-wrapper dock">
+            <div class="liquidGlass-effect"></div>
+            <div class="liquidGlass-tint"></div>
+            <div class="liquidGlass-shine"></div>
+            <div class="liquidGlass-text">
+                <div class="dock">
+                    <span class="dock-char">L</span>
+                    <span class="dock-char">I</span>
+                    <span class="dock-char">B</span>
+                    <span class="dock-char">_</span>
+                    <span class="dock-char">A</span>
+                    <span class="dock-char">I</span>
+                </div>
+            </div>
+        </div>
+
+        <a href="https://6over3.com">
+            <div class="liquidGlass-wrapper button">
+                <div class="liquidGlass-effect"></div>
+                <div class="liquidGlass-tint"></div>
+                <div class="liquidGlass-shine"></div>
+                <div class="liquidGlass-text">
+                    <svg width="186" height="39" viewBox="46 0 94 39" xmlns="http://www.w3.org/2000/svg">
+                        <path id="6over3" fill="#ffffff" fill-rule="evenodd" stroke="none"
+                            d="M 138.917999 19.788 C 142.085999 19.788 144.498001 21.84 144.498001 25.188 C 144.498001 28.428001 142.230011 30.624001 139.169998 30.624001 C 135.858002 30.624001 133.806 27.959999 133.949997 24.648001 L 130.746002 24.648001 C 130.529999 29.58 133.877991 33.431999 139.169998 33.431999 C 143.886002 33.431999 147.630005 29.868 147.630005 25.224001 C 147.630005 21.732 145.578003 19.356001 142.734009 18.204 C 144.786011 17.195999 146.442001 15.108 146.442001 12.408001 C 146.442001 8.411999 143.526001 5.424 139.313995 5.424 C 134.382004 5.424 131.753998 9.348 131.970001 13.416 L 134.886002 13.416 C 134.705994 10.248001 136.578003 8.195999 139.313995 8.195999 C 141.617996 8.195999 143.45401 10.032001 143.45401 12.48 C 143.45401 15.035999 141.402008 16.908001 138.917999 16.908001 L 138.774002 16.908001 L 138.774002 19.788 Z M 130.097992 16.548 C 129.485992 16.08 128.514008 15.719999 127.433998 15.719999 C 125.237999 15.719999 123.582001 17.124001 122.753998 18.959999 L 122.753998 16.08 L 119.730003 16.08 L 119.730003 33 L 122.753998 33 L 122.753998 23.784 C 122.753998 20.832001 124.194 18.636 126.713997 18.636 C 127.578003 18.636 128.442001 18.888 129.018005 19.392 Z M 106.842003 30.624001 C 103.889999 30.624001 101.405998 28.392 101.117996 25.152 L 115.085999 25.152 C 115.085999 19.104 111.377998 15.648001 106.842003 15.648001 C 102.089996 15.648001 98.201996 19.643999 98.201996 24.540001 C 98.201996 29.436001 102.089996 33.431999 106.842003 33.431999 C 110.153999 33.431999 113.033997 31.667999 114.725998 28.5 L 112.278 27.132 C 111.089996 29.364 109.650002 30.624001 106.842003 30.624001 Z M 106.842003 18.384001 C 109.722 18.384001 111.522003 20.327999 111.882004 22.74 L 101.297997 22.74 C 102.017998 20.148001 104.178001 18.384001 106.842003 18.384001 Z M 87.582001 33.936001 L 96.582001 16.08 L 93.522003 16.08 L 87.690002 27.888 L 81.821999 16.08 L 78.582001 16.08 Z M 59.393997 24.540001 C 59.393997 29.436001 63.354 33.431999 68.178001 33.431999 C 73.001999 33.431999 76.962006 29.436001 76.962006 24.540001 C 76.962006 19.643999 73.001999 15.648001 68.178001 15.648001 C 63.354 15.648001 59.393997 19.643999 59.393997 24.540001 Z M 62.346001 24.540001 C 62.346001 21.048 64.902 18.455999 68.178001 18.455999 C 71.453995 18.455999 74.009995 21.048 74.009995 24.540001 C 74.009995 28.032 71.453995 30.624001 68.178001 30.624001 C 64.902 30.624001 62.346001 28.032 62.346001 24.540001 Z M 56.298 24.540001 C 56.298 19.572001 52.374001 15.827999 47.514 15.827999 C 47.153999 15.827999 46.793999 15.864 46.433998 15.936001 L 53.129997 7.007999 L 50.574001 5.388 L 41.214001 18.096001 C 39.666 20.219999 38.73 22.236 38.73 24.540001 C 38.73 29.436001 42.689999 33.431999 47.514 33.431999 C 52.337997 33.431999 56.298 29.436001 56.298 24.540001 Z M 47.514 18.636 C 50.646 18.636 53.202 21.120001 53.202 24.540001 C 53.202 27.959999 50.646 30.444 47.514 30.444 C 44.382 30.444 41.826 27.959999 41.826 24.540001 C 41.826 21.120001 44.382 18.636 47.514 18.636 Z" />
+                    </svg>
+
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <svg style="display: none">
+        <filter id="glass-distortion" x="0%" y="0%" width="100%" height="100%" filterUnits="objectBoundingBox">
+            <feTurbulence type="fractalNoise" baseFrequency="0.01 0.01" numOctaves="1" seed="5" result="turbulence" />
+            <!-- Seeds: 14, 17,  -->
+
+            <feComponentTransfer in="turbulence" result="mapped">
+                <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+                <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+                <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+            </feComponentTransfer>
+
+            <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+
+            <feSpecularLighting in="softMap" surfaceScale="5" specularConstant="1" specularExponent="100"
+                lighting-color="white" result="specLight">
+                <fePointLight x="-200" y="-200" z="300" />
+            </feSpecularLighting>
+
+            <feComposite in="specLight" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="litImage" />
+
+            <feDisplacementMap in="SourceGraphic" in2="softMap" scale="150" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+    </svg>
+</body>
+
+</html>
