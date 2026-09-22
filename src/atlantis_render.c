@@ -147,13 +147,16 @@ void render_welcome(void)
     int32_t bottom_row = app.rows - margin_v;
     int32_t center_row = (top_row + bottom_row) / 2;
 
-    // Compact terminal wordmark: readable, calm, and unmistakably Atlantis.
+    // Atlantis wordmark in portable ASCII art.
     static const char* logo[] = {
-        "▄▀█ ▀█▀ █   ▄▀█ █▄ █ ▀█▀ █▀",
-        "█▀█  █  █▄▄ █▀█ █ ▀█  █  ▄█",
+        " ███  █████ █      ███  █   █ █████ █████  ████",
+        "█   █   █   █     █   █ ██  █   █     █   █    ",
+        "█████   █   █     █████ █ █ █   █     █    ███ ",
+        "█   █   █   █     █   █ █  ██   █     █       █",
+        "█   █   █   █████ █   █ █   █   █   █████ ████ "
     };
-    int32_t logo_height = 2;
-    int32_t logo_width = 27;
+    int32_t logo_height = 5;
+    int32_t logo_width = 47;
 
     // Center logo vertically - position it above center
     int32_t logo_start = center_row - logo_height - 2;
