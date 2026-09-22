@@ -18,6 +18,22 @@ Atlantis is a fast, distraction-free writing environment for people who want to 
 - **Keyboard-first movement** — visual lines, words, pages, and footnotes have predictable shortcuts.
 - **Local and fast** — no browser, Electron app, account, or network connection is required.
 
+## Screenshots
+
+These are real captures from Atlantis running locally.
+
+### Welcome screen
+
+![Atlantis welcome screen](assets/screenshots/welcome-dark.png)
+
+### History
+
+![Atlantis history](assets/screenshots/history.png)
+
+### Writing timer
+
+![Atlantis writing timer](assets/screenshots/timer.png)
+
 ## Features
 
 ### Live Markdown
