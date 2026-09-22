@@ -1,6 +1,6 @@
 # Atlantis navigation
 
-Atlantis is a navigation-first terminal markdown editor based on Dawn's rendering and editing engine.
+Atlantis is a navigation-first terminal Markdown editor built for calm, keyboard-driven writing.
 
 ## Quick Open
 
