@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 680" role="img" aria-labelledby="title desc">
+  <title id="title">Atlantis editor</title><desc id="desc">Atlantis Markdown editor in dark ocean theme</desc>
+  <rect width="1200" height="680" rx="24" fill="#07161e"/>
+  <rect x="36" y="32" width="1128" height="616" rx="16" fill="#0c2730" stroke="#184e5b" stroke-width="3"/>
+  <text x="76" y="86" fill="#34cfc4" font-family="monospace" font-size="22">ATLANTIS</text><text x="1120" y="86" text-anchor="end" fill="#5b8f97" font-family="monospace" font-size="20">notes.md</text>
+  <line x1="76" y1="112" x2="1124" y2="112" stroke="#184e5b" stroke-width="2"/>
+  <text x="88" y="174" fill="#75e8df" font-family="monospace" font-size="42" font-weight="bold">A calm place to think</text>
+  <text x="88" y="228" fill="#d3f3f1" font-family="monospace" font-size="25">Write without leaving the document.</text>
+  <text x="88" y="286" fill="#5b8f97" font-family="monospace" font-size="25">Use Ctrl+L to move between ideas.</text>
+  <rect x="88" y="342" width="560" height="116" rx="8" fill="#0a1f27" stroke="#184e5b"/>
+  <text x="112" y="382" fill="#34cfc4" font-family="monospace" font-size="23">&gt; quick navigation</text><text x="112" y="420" fill="#5b8f97" font-family="monospace" font-size="21">headings · search · footnotes</text>
+  <text x="76" y="608" fill="#5b8f97" font-family="monospace" font-size="20">3 headings   128 words</text><text x="1124" y="608" text-anchor="end" fill="#34cfc4" font-family="monospace" font-size="20">dark · ready</text>
+</svg>
