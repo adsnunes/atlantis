@@ -24,7 +24,7 @@ These are real captures from Atlantis running locally.
 
 ### Welcome screen
 
-![Atlantis welcome screen](assets/screenshots/welcome-dark.png)
+![Atlantis welcome screen](assets/screenshots/welcome-dark-latest.png)
 
 ### History
 
